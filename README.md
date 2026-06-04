@@ -37,27 +37,16 @@ Temporal leakage prevention and lag feature construction
 Class imbalance handling via class_weight='balanced'
 
 
-🗂️ Project Structure
-├── app.py                      # Main Streamlit application
-├── config.py                   # Paths and column constants
-├── utils.py                    # Model loading, prediction, feature importance helpers
-├── requirements.txt            # Python dependencies
-│
-├── models/
-│   ├── disaster_model.pkl      # Trained Logistic Regression model
-│   ├── scaler.pkl              # Fitted StandardScaler
-│   └── feature_columns.pkl    # Ordered list of feature columns from training
-│
-└── data/
-    ├── country_year_features.csv   # Engineered country-year panel (model input)
-    └── cleaned_data.csv            # Cleaned EM-DAT source data
-
 🧠 Modelling Approach
+
 DetailValueAlgorithmLogistic RegressionRegularisationL2 (C=1.0)Class balancingclass_weight='balanced'Validation5-Fold Cross-Validation + Temporal Train/Test SplitTarget variableBinary — 1 = High Occurrence (≥ country median), 0 = Low OccurrenceKey featuresprev_year_count, log_prev_total_deaths, log_prev_total_affected, log_prev_total_damage, disaster type counts (flood, storm, etc.)DatasetEM-DAT (CRED, UCLouvain) · Asia · 2001–2024
+
 Why Logistic Regression?
 Interpretability is a core requirement for this project. Logistic regression produces signed, magnitude-ranked coefficients that directly answer what drives risk — a result that policymakers and domain experts can act on. More complex models (Random Forest, XGBoost) may offer marginally higher AUC-ROC but at the cost of transparency.
+
 Temporal Leakage Prevention
 All lag features (prev_year_count, log_prev_total_deaths, etc.) use data from year t-1 to predict year t. The scaler was fitted exclusively on the training set. event_count — the basis for the target variable — is explicitly excluded from the feature set.
+
 Next-Year Forecasting
 When forecasting the following year, the current year's actuals are rolled forward into the lag columns before prediction, so the model always receives the correct temporal input rather than repeated values.
 
